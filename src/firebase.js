@@ -5,13 +5,14 @@ import { initializeApp } from "firebase/app";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyClu2O0b_0MWfuqenWAct0QHqYo1xHG4rc",
-  authDomain: "xogameg1.firebaseapp.com",
-  projectId: "xogameg1",
-  storageBucket: "xogameg1.appspot.com",
-  messagingSenderId: "81594269941",
-  appId: "1:81594269941:web:c71d3217c52048954a85bc",
-  databaseURL: "https://xogameg1-default-rtdb.asia-southeast1.firebasedatabase.app"
+  apiKey: "AIzaSyC88o2K6rB5H8K_L9Wi75v8UHCXgf9efYQ",
+  authDomain: "xo-online-43817.firebaseapp.com",
+  databaseURL: "https://xo-online-43817-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "xo-online-43817",
+  storageBucket: "xo-online-43817.appspot.com",
+  messagingSenderId: "176767718168",
+  appId: "1:176767718168:web:debe0fdb9719f6db3fc46d",
+  measurementId: "G-43BW6B79DF"
 };
 
 // Initialize Firebase

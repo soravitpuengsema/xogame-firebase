@@ -1,8 +1,5 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
-
 import Board from './Board.js';
-
 import { getDatabase, ref, set, onValue, remove, update } from "firebase/database";
 import app from '../firebase.js';
 
@@ -18,8 +15,11 @@ export default class Game extends React.Component {
         stepNumber: 0,
         xIsNext: true,
         database: getDatabase(app),
+        player: null,
+        disable_btn : false
       };
     }
+
 
     updateDB() {       
           set(ref(this.state.database), {
@@ -30,16 +30,27 @@ export default class Game extends React.Component {
       }
 
     readDB() {
-        const refDB = ref(this.state.database);
-        const dbval = null;
+        let refDB = ref(this.state.database);
+        var dbval = null;
         onValue(refDB, (snapshot) => {
             dbval = snapshot.val();
             this.setState({
-                history: dbval.history,
+                history: JSON.parse(dbval.history),
                 stepNumber: dbval.stepNumber,
                 xIsNext: dbval.xIsNext
             });
         });
+        
+    }
+
+    componentDidMount(){
+      this.readDB()
+      this.interval = setInterval(
+        () => {this.readDB()},100)
+    }
+
+    handlePlayer = (value) => {
+      this.setState({player: value, disable_btn : true});
     }
 
     handleClick(i) {
@@ -49,6 +60,17 @@ export default class Game extends React.Component {
       if (calculateWinner(squares) || squares[i]) {
         return;
       }
+      
+      if(!this.state.xIsNext & (this.state.player == "X")){
+        return;
+      }
+      else if(this.state.xIsNext & (this.state.player == "O")){
+        return;
+      }
+      else if(this.state.player == null){
+        return;
+      }
+
       squares[i] = this.state.xIsNext ? "X" : "O";
       this.setState({
         history: history.concat([
@@ -59,8 +81,6 @@ export default class Game extends React.Component {
         stepNumber: history.length,
         xIsNext: !this.state.xIsNext
       });
-
-      //this.writeUserData();
     }
   
     jumpTo(step) {
@@ -71,13 +91,13 @@ export default class Game extends React.Component {
     }
   
     render() {
-      this.readDB();
       this.updateDB();
 
       const history = this.state.history;
       const current = history[this.state.stepNumber];
       const winner = calculateWinner(current.squares);
 
+      
       const moves = history.map((step, move) => {
         const desc = move ?
           'Go to move #' + move :
@@ -93,7 +113,7 @@ export default class Game extends React.Component {
       if (winner) {
         status = "Winner: " + winner;
       } else {
-        status = "Next player: " + (this.state.xIsNext ? "X" : "O");
+        status = "Player: " + (this.state.xIsNext ? "X" : "O") + " turn";
       }
   
       return (
@@ -105,8 +125,27 @@ export default class Game extends React.Component {
             />
           </div>
           <div className="game-info">
+          <div>
+            {this.state.disable_btn ? <p>You are player : {this.state.player}</p> : <p>Please choose X or O </p>}
+            {this.state.disable_btn ? null :
+              <button onClick={()=>{this.handlePlayer('X')}} disabled={this.state.disable_btn}>
+                X
+              </button>
+            }
+            {this.state.disable_btn ? null :
+              <button onClick={()=>{this.handlePlayer('O')}} disabled={this.state.disable_btn}>
+                O
+              </button>
+            }
+          </div>
+          {
+            !this.state.disable_btn ? null :
             <div>{status}</div>
+          }
+          {
+            !this.state.disable_btn ? null :
             <ol>{moves}</ol>
+          }
           </div>
         </div>
       );
@@ -131,4 +170,4 @@ function calculateWinner(squares) {
       }
     }
     return null;
-  }
+}
